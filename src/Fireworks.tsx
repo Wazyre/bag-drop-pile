@@ -8,14 +8,14 @@ import './App.css';
 import React from 'react';
 import { initOptions } from './InitOptions';
 
-interface FireworksProps {
-	runFireworks: boolean
-};
+// interface FireworksProps {
+// 	runFireworks: boolean
+// };
 
 const Fireworks = React.memo(() => {
 	const [init, setInit] = useState(false); 
 	const [options, setOptions] = useState<ISourceOptions>();
-	const [fContainer, setFContainer] = useState<Container>();
+	// const [fContainer, setFContainer] = useState<Container>();
 	
 	const particlesLoaded = useCallback(async (container?: Container): Promise<void> => {
 		console.log(container);

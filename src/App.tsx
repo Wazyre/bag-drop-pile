@@ -69,7 +69,7 @@ const App = () => {
     render.current = Render.create({
       element: boxElement,
       engine: engine.current,
-      canvas: canvasRef.current,
+      canvas: canvasRef.current != null ? canvasRef.current : undefined,
       options: {
         background: '#BBBBBB',
         pixelRatio: window.devicePixelRatio
