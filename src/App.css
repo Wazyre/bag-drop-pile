@@ -6,6 +6,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  direction: rtl;
   z-index: 1;
 }
 
@@ -42,6 +43,7 @@
 .counter {
   margin-bottom: 10px;
   z-index: 4;
+  
 }
 
 .fireworks-shown {

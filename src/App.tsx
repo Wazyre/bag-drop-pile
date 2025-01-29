@@ -2,7 +2,11 @@ import { MutableRefObject, useCallback, useEffect, useLayoutEffect, useRef, useS
 import { Bodies, Body, Composite, Engine, Render, Runner} from "matter-js";
 import './App.css'
 import Fireworks from './Fireworks';
-
+import blackBag from './assets/BlackBag.png';
+import blueBag from './assets/BlackBag.png';
+import pinkBag from './assets/PinkBag.png';
+import purpleBag from './assets/PurpleBag.png';
+import redBag from './assets/RedBag.png';
 
 const App = () => {
   
@@ -11,36 +15,27 @@ const App = () => {
   const [boxElement, setBoxElement] = useState<HTMLDivElement>();
   const [runFireworks, setRunFireworks] = useState(false);
   const [bagsPerFireworks, setBagsPerFireworks] = useState(5);
-  // const [scene, setScene] = useState();
 
-  // const boxRef = useRef<HTMLDivElement>(null);
-  // const observer = new ResizeObserver(([entry]) => {
-  //   console.log('Entered observer')
-  //   setConstraints(entry.contentRect);
+  const bagImages = [
+    blackBag,
+    blueBag,
+    pinkBag,
+    purpleBag,
+    redBag
+  ]
 
-  // })
   const boxRef = useCallback((node: HTMLDivElement) => {
-    
-    // observer.observe(boxRef.);
     if(node != null){
       setBoxElement(node);
       console.log('Entered callback')
       setConstraints(node.getBoundingClientRect());
     }
-
-    // return () => {
-    //   observer.disconnect();
-    // }
   }, []);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // const composite: MutableRefObject<Composite | undefined> = useRef();
   const engine: MutableRefObject<Engine> = useRef(Engine.create({}));
   const render: MutableRefObject<Render | undefined> = useRef()
   const runner: MutableRefObject<Runner> = useRef(Runner.create());
-
-  // let height: number;
-  // let width: number;
 
   const getCanvasSize = (multiplier: number, dimension: string = 'width') => {
     if (constraints) {
@@ -61,10 +56,6 @@ const App = () => {
 
   const initializeRenderer = () => {
     console.log('Began initalization')
-    // if (!boxRef || !canvasRef.current) return;
-
-    // height = boxRef.current.offsetHeight;
-    // width = boxRef.current.offsetWidth;
 
     render.current = Render.create({
       element: boxElement,
@@ -72,8 +63,8 @@ const App = () => {
       canvas: canvasRef.current != null ? canvasRef.current : undefined,
       options: {
         background: '#BBBBBB',
-        pixelRatio: window.devicePixelRatio
-        // wireframes: false
+        pixelRatio: window.devicePixelRatio,
+        wireframes: false
       }
     });
 
@@ -84,7 +75,6 @@ const App = () => {
     ]);
 
     Render.run(render.current);
-    // runner.current = Runner.create();
     Runner.run(runner.current, engine.current);
     
     console.log('Finished initialization')
@@ -130,19 +120,11 @@ const App = () => {
 
   useEffect(() => {
 
-    // if (render.current) {
-    //   // Render.run(render.current);
-    //   // // runner.current = Runner.create();
-    //   // Runner.run(runner.current, engine.current);
-    //   console.log('oehfoew')
-    //   return
-    // };
     initializeRenderer(); 
     console.log('Ended initial useEffect')
 
     return(() => {
       clearRenderer();
-      // window.removeEventListener('resize', handleResize);
     })
   }, [boxElement]);
 
@@ -195,17 +177,20 @@ const App = () => {
   useEffect(() => {
     if (counter != 0) { // Prevents adding bag when counter is initialized
       const width: number = getCanvasSize(1);
-      // console.log(engine.current.world.bodies[0])
 
-      Composite.add(engine.current.world, [
-        Bodies.rectangle(Math.floor(Math.random() * -width) + width, 10, 50, 100, { //Add a grain to the current mouse position.
-          angle: 45, friction: 10, restitution: 0.01, density: 0.001,
-          render: { //Just color change
-            fillStyle: '#888888', strokeStyle: '#333333', lineWidth: 3
+      Composite.add(engine.current.world, [ // 50, 100
+        Bodies.rectangle(Math.floor(Math.random() * -width) + width, 20, getCanvasSize(0.035), getCanvasSize(0.07), { // Add a bag resized according to screen size
+          angle: Math.floor(Math.random() * 360), friction: 10, restitution: 0.01, density: 0.001,
+          render: { 
+            //fillStyle: '#888888', strokeStyle: '#333333', lineWidth: 3,
+            sprite: {
+              xScale: getCanvasSize(0.1) / 1000,
+              yScale: getCanvasSize(0.1) / 1000,
+              texture: bagImages[Math.floor(Math.random() * bagImages.length)]
+            }
           }
         }),
       ]);
-      // console.log(engine.current.world)
     }
   }, [counter]);
   
@@ -214,19 +199,19 @@ const App = () => {
       <div>
         <div className='windowView'>
           {runFireworks && <Fireworks />}
-          <h2 className='counter'>{counter + ' Bags'}</h2>
+          <h2 className='counter'>{counter + ' حقائب'}</h2>
           <div ref={boxRef} className='canvas'>
             <canvas ref={canvasRef}  />
           </div>
           <div>
             <label className='bagNumberLabel'>
-              Enter how many bags drop before each fireworks:
+              أدخل عدد الحقائب قبل كل احتفال:
               <input className='bagNumberInput' type='number' value={bagsPerFireworks} onChange={e => setBagsPerFireworks(parseInt(e.target.value))} />
             </label>
             
           </div>
           <button className='addBtn' type='button' onClick={addBag}>
-            Click
+            إضغط
           </button>
         </div>
       </div>
