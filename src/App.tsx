@@ -40,9 +40,9 @@ const App = () => {
   const getCanvasSize = (multiplier: number, dimension: string = 'width') => {
     if (constraints) {
       if (dimension == 'width') {
-        return (constraints.width * multiplier) / window.devicePixelRatio
+        return (constraints.width * multiplier) // window.devicePixelRatio
       }
-      return (constraints.height * multiplier) / window.devicePixelRatio
+      return (constraints.height * multiplier) // window.devicePixelRatio
     }
     return 0;
   }
