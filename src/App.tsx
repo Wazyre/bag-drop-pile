@@ -109,23 +109,34 @@ const App = () => {
     }
   };
 
+  const removeBag = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setCounter(0);
+    localStorage.clear();
+    Composite.remove(engine.current.world, engine.current.world.bodies.splice(3))
+
+  }
+
   useLayoutEffect(() => {
     console.log('Entered layout effect')
     window.addEventListener("resize", handleResize);
 
     return () => {
+      console.log('Exiting layout effect')
       window.removeEventListener("resize", handleResize);
     }
   }, [boxElement]);
 
   useEffect(() => {
+    if (boxElement) {
+      initializeRenderer();
+      console.log('Ended initial useEffect')
 
-    initializeRenderer(); 
-    console.log('Ended initial useEffect')
-
-    return(() => {
-      clearRenderer();
-    })
+      return (() => {
+        clearRenderer();
+      })
+    }
+    
   }, [boxElement]);
 
   useEffect(() => {
@@ -175,8 +186,10 @@ const App = () => {
   }, [render, constraints])
 
   useEffect(() => {
+    console.log('Counter useEffect')
     if (counter != 0) { // Prevents adding bag when counter is initialized
       const width: number = getCanvasSize(1);
+      localStorage.setItem('counter', counter.toString())
 
       Composite.add(engine.current.world, [ // 50, 100
         Bodies.rectangle(Math.floor(Math.random() * -width) + width, 20, getCanvasSize(0.035), getCanvasSize(0.07), { // Add a bag resized according to screen size
@@ -193,6 +206,31 @@ const App = () => {
       ]);
     }
   }, [counter]);
+
+  useEffect(() => {
+    console.log('Grabbing local counter')
+    const localCounter = localStorage.getItem('counter');
+    if (localCounter && boxElement) {
+      console.log('Adding previous bags')
+      setCounter(parseInt(localCounter));
+      const width: number = getCanvasSize(1);
+      for (let i = 0; i < parseInt(localCounter)-1; i++) {
+        Composite.add(engine.current.world, [ // 50, 100
+          Bodies.rectangle(Math.floor(Math.random() * -width) + width, 20, getCanvasSize(0.035), getCanvasSize(0.07), { // Add a bag resized according to screen size
+            angle: Math.floor(Math.random() * 360), friction: 10, restitution: 0.01, density: 0.001,
+            render: {
+              //fillStyle: '#888888', strokeStyle: '#333333', lineWidth: 3,
+              sprite: {
+                xScale: getCanvasSize(0.1) / 1000,
+                yScale: getCanvasSize(0.1) / 1000,
+                texture: bagImages[Math.floor(Math.random() * bagImages.length)]
+              }
+            }
+          }),
+        ]);
+      }
+    }
+  }, [boxElement])
   
   if (boxRef) {
     return (
@@ -210,9 +248,15 @@ const App = () => {
             </label>
             
           </div>
-          <button className='addBtn' type='button' onClick={addBag}>
-            إضغط
-          </button>
+          <div className='row'>
+            <button className='addBtn' type='button' onClick={addBag}>
+              إضغط
+            </button>
+            <button className='removeBtn' type='button' onClick={removeBag}>
+              إعادة
+            </button>
+          </div>
+          
         </div>
       </div>
     );

@@ -32,7 +32,11 @@
 }
 
 .addBtn {
-  margin-top: 10px;
+  margin: 10px;
+  z-index: 4;
+}
+.removeBtn {
+  margin: 10px;
   z-index: 4;
 }
 .bagNumberInput {
