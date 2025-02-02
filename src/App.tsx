@@ -3,7 +3,7 @@ import { Bodies, Body, Composite, Engine, Render, Runner} from "matter-js";
 import './App.css'
 import Fireworks from './Fireworks';
 import blackBag from './assets/BlackBag.png';
-import blueBag from './assets/BlackBag.png';
+import blueBag from './assets/BlueBag.png';
 import pinkBag from './assets/PinkBag.png';
 import purpleBag from './assets/PurpleBag.png';
 import redBag from './assets/RedBag.png';
@@ -14,7 +14,7 @@ const App = () => {
   const [constraints, setConstraints] = useState<DOMRect>();
   const [boxElement, setBoxElement] = useState<HTMLDivElement>();
   const [runFireworks, setRunFireworks] = useState(false);
-  const [bagsPerFireworks, setBagsPerFireworks] = useState(5);
+  const [bagsPerFireworks, setBagsPerFireworks] = useState(100);
 
   const bagImages = [
     blackBag,
@@ -23,6 +23,8 @@ const App = () => {
     purpleBag,
     redBag
   ]
+
+  const fireworksDuration: number = 3000; // In ms
 
   const boxRef = useCallback((node: HTMLDivElement) => {
     if(node != null){
@@ -62,7 +64,7 @@ const App = () => {
       engine: engine.current,
       canvas: canvasRef.current != null ? canvasRef.current : undefined,
       options: {
-        background: '#BBBBBB',
+        background: '#ffffff',
         pixelRatio: window.devicePixelRatio,
         wireframes: false
       }
@@ -105,16 +107,17 @@ const App = () => {
       setRunFireworks(true);
       setTimeout(function () {
         setRunFireworks(false);
-      }, 2000);
+      }, fireworksDuration);
     }
   };
 
   const removeBag = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    window.location.reload();
     setCounter(0);
     localStorage.clear();
     Composite.remove(engine.current.world, engine.current.world.bodies.splice(3))
-
+    
   }
 
   useLayoutEffect(() => {
@@ -237,7 +240,7 @@ const App = () => {
       <div>
         <div className='windowView'>
           {runFireworks && <Fireworks />}
-          <h2 className='counter'>{counter + ' حقائب'}</h2>
+          <h2 className='counter'>{counter + ' جنطة لحسن وأصدقائه'}</h2>
           <div ref={boxRef} className='canvas'>
             <canvas ref={canvasRef}  />
           </div>
@@ -251,6 +254,12 @@ const App = () => {
           <div className='row'>
             <button className='addBtn' type='button' onClick={addBag}>
               إضغط
+            </button>
+            <button className='addBtn' type='button' onClick={()=>{setRunFireworks(true);
+            setTimeout(function () {
+              setRunFireworks(false);
+            }, fireworksDuration);}}>
+              احتفال
             </button>
             <button className='removeBtn' type='button' onClick={removeBag}>
               إعادة
