@@ -25,7 +25,7 @@ const App = () => {
     redBag
   ]
 
-  const fireworksDuration: number = 3000; // In ms
+  const fireworksDuration: number = 5000; // In ms
 
   const boxRef = useCallback((node: HTMLDivElement) => {
     if(node != null){
@@ -265,10 +265,12 @@ const App = () => {
             <button className='removeBtn' type='button' onClick={() => setShowButtons(false)}>
               إخفاء
             </button>
-            <button className='addBtn' type='button' onClick={()=>{setRunFireworks(true);
+            <button className='addBtn' type='button' onClick={()=>{
+              setRunFireworks(true);
             setTimeout(function () {
               setRunFireworks(false);
-            }, fireworksDuration);}}>
+            }, fireworksDuration);
+            }}>
               إحتفال
             </button>
             <button className='removeBtn' type='button' onClick={removeBag}>
