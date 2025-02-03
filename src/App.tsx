@@ -15,6 +15,7 @@ const App = () => {
   const [boxElement, setBoxElement] = useState<HTMLDivElement>();
   const [runFireworks, setRunFireworks] = useState(false);
   const [bagsPerFireworks, setBagsPerFireworks] = useState(100);
+  const [showButtons, setShowButtons] = useState(true);
 
   const bagImages = [
     blackBag,
@@ -97,7 +98,7 @@ const App = () => {
     Engine.clear(engine.current);
   };
 
-  const addBag = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const addBag = (e: React.MouseEvent<HTMLDivElement>) => { //e: React.MouseEvent<HTMLButtonElement>
     e.preventDefault();
     setCounter(counter + 1);
 
@@ -114,8 +115,8 @@ const App = () => {
   const removeBag = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     window.location.reload();
-    setCounter(0);
-    localStorage.clear();
+    // setCounter(0);
+    // localStorage.clear();
     Composite.remove(engine.current.world, engine.current.world.bodies.splice(3))
     
   }
@@ -123,20 +124,24 @@ const App = () => {
   useLayoutEffect(() => {
     console.log('Entered layout effect')
     window.addEventListener("resize", handleResize);
+    // document.getElementById("canvas")?.addEventListener("click", (e) => addBag(e));
 
-    return () => {
+    return (() => {
       console.log('Exiting layout effect')
       window.removeEventListener("resize", handleResize);
-    }
+      // document.getElementById("canvas")?.removeEventListener('click', (e) => addBag(e));
+    })
   }, [boxElement]);
 
   useEffect(() => {
     if (boxElement) {
       initializeRenderer();
       console.log('Ended initial useEffect')
+      
 
       return (() => {
         clearRenderer();
+        
       })
     }
     
@@ -216,55 +221,60 @@ const App = () => {
     if (localCounter && boxElement) {
       console.log('Adding previous bags')
       setCounter(parseInt(localCounter));
-      const width: number = getCanvasSize(1);
-      for (let i = 0; i < parseInt(localCounter)-1; i++) {
-        Composite.add(engine.current.world, [ // 50, 100
-          Bodies.rectangle(Math.floor(Math.random() * -width) + width, 20, getCanvasSize(0.035), getCanvasSize(0.07), { // Add a bag resized according to screen size
-            angle: Math.floor(Math.random() * 360), friction: 10, restitution: 0.01, density: 0.001,
-            render: {
-              //fillStyle: '#888888', strokeStyle: '#333333', lineWidth: 3,
-              sprite: {
-                xScale: getCanvasSize(0.1) / 1000,
-                yScale: getCanvasSize(0.1) / 1000,
-                texture: bagImages[Math.floor(Math.random() * bagImages.length)]
-              }
-            }
-          }),
-        ]);
-      }
+      // const width: number = getCanvasSize(1);
+      // for (let i = 0; i < parseInt(localCounter)-1; i++) {
+      //   Composite.add(engine.current.world, [ // 50, 100
+      //     Bodies.rectangle(Math.floor(Math.random() * -width) + width, 20, getCanvasSize(0.035), getCanvasSize(0.07), { // Add a bag resized according to screen size
+      //       angle: Math.floor(Math.random() * 360), friction: 10, restitution: 0.01, density: 0.001,
+      //       render: {
+      //         //fillStyle: '#888888', strokeStyle: '#333333', lineWidth: 3,
+      //         sprite: {
+      //           xScale: getCanvasSize(0.1) / 1000,
+      //           yScale: getCanvasSize(0.1) / 1000,
+      //           texture: bagImages[Math.floor(Math.random() * bagImages.length)]
+      //         }
+      //       }
+      //     }),
+      //   ]);
+      // }
     }
   }, [boxElement])
   
   if (boxRef) {
     return (
       <div>
-        <div className='windowView'>
+        <div id='canvas' className='windowView'>
           {runFireworks && <Fireworks />}
-          <h2 className='counter'>{counter + ' جنطة لحسن وأصدقائه'}</h2>
-          <div ref={boxRef} className='canvas'>
+          <h2 className='counter' onClick={() => setShowButtons(true)} >
+            {counter + ' جنطة لحسن وأصدقائه'}
+          </h2>
+          <div  ref={boxRef} className='canvas' onClick={addBag}>
             <canvas ref={canvasRef}  />
           </div>
-          <div>
+          {showButtons && <div>
             <label className='bagNumberLabel'>
               أدخل عدد الحقائب قبل كل احتفال:
               <input className='bagNumberInput' type='number' value={bagsPerFireworks} onChange={e => setBagsPerFireworks(parseInt(e.target.value))} />
             </label>
             
-          </div>
-          <div className='row'>
-            <button className='addBtn' type='button' onClick={addBag}>
+          </div>}
+          {showButtons && <div className='row'>
+            {/* <button className='addBtn' type='button' >
               إضغط
+            </button> */}
+            <button className='removeBtn' type='button' onClick={() => setShowButtons(false)}>
+              إخفاء
             </button>
             <button className='addBtn' type='button' onClick={()=>{setRunFireworks(true);
             setTimeout(function () {
               setRunFireworks(false);
             }, fireworksDuration);}}>
-              احتفال
+              إحتفال
             </button>
             <button className='removeBtn' type='button' onClick={removeBag}>
               إعادة
             </button>
-          </div>
+          </div>}
           
         </div>
       </div>
